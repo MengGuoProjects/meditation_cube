@@ -8,12 +8,11 @@ const unsigned int MAX_BRIGHTNESS_PERCENT = 100;
 /* initializtion */
 void setup() {
   pinMode(LED_1_PIN, OUTPUT); 
-  pinMode(13, OUTPUT);
-  digitalWrite(13, LOW);
+  digitalWrite(LED_1_PIN, LOW);
 }
 
 /* forward clarations */
-int conv_percent_to_ADC(int input);
+int convPercentToADC(int input);
 void breath(const unsigned int duration_to_breathin_s, const bool is_exhale = false);
 
 /* main function */
@@ -33,16 +32,16 @@ void breath(const unsigned int duration_to_breathin_s, const bool is_exhale = fa
     const unsigned int brightness_ramp_down_percent = 100 - brightness_ramp_up_percent;
 
     if (is_exhale) {
-      analogWrite(LED_1_PIN, conv_percent_to_ADC(brightness_ramp_down_percent));
+      analogWrite(LED_1_PIN, convPercentToADC(brightness_ramp_down_percent));
     } else {
-      analogWrite(LED_1_PIN, conv_percent_to_ADC(brightness_ramp_up_percent));
+      analogWrite(LED_1_PIN, convPercentToADC(brightness_ramp_up_percent));
     }
 
     delay(duration_to_breathin_s * 1000 / MAX_BRIGHTNESS_PERCENT);
   }
 }
 
-int conv_percent_to_ADC(int input) {
+int convPercentToADC(int input) {
   const unsigned int steps_of_ADC = 255;
   return input * steps_of_ADC / 100;
 }
