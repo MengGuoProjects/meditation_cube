@@ -8,6 +8,7 @@ const unsigned int MAX_BRIGHTNESS_PERCENT = 100;
 /* initializtion */
 void setup() {
   pinMode(LED_1_PIN, OUTPUT); 
+  startupAnimation();
   digitalWrite(LED_1_PIN, LOW);
 }
 
@@ -44,4 +45,10 @@ void breath(const unsigned int duration_to_breathin_s, const bool is_exhale = fa
 int convPercentToADC(int input) {
   const unsigned int steps_of_ADC = 255;
   return input * steps_of_ADC / 100;
+}
+
+void startupAnimation() {
+  for (int i = 0; i < 4; i++) {
+    breath(i);
+  }
 }
