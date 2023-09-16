@@ -39,7 +39,7 @@ void loop() {
   inhale_ms = convEncToMilliSec(myEnc.read());
   const unsigned int exhale_ms = inhale_ms * 7 / 5;
   const unsigned int hold_ms = 500;
-  breath(inhale_ms*10);
+  // breath(inhale_ms);
   // delay(hold_ms * 2);
   // breath(exhale_ms, true);
   // delay(hold_ms);
@@ -67,7 +67,7 @@ int convPercentToADC(int input) {
 
 void startupAnimation() {
   for (int i = 0; i < 4; i++) {
-    breath(i);
+    breath(i*1000);
   }
 }
 
