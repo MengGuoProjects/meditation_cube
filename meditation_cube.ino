@@ -8,10 +8,11 @@ const unsigned int LED_1_PIN = 11;
 const unsigned int MAX_BRIGHTNESS_PERCENT = 100;
 const unsigned int ENC_1_PIN = 1;
 const unsigned int ENC_2_PIN = 2;
-const unsigned int MAX_INHALE_MS = 10000;
+const unsigned int MAX_INHALE_MS = 13;
+const unsigned int MIN_INHALE_MS = 5;
 
 unsigned int inhale_ms = 0;
-unsigned long encoder_new_position = 0;
+//nsigned long encoder_new_position = 0;
 unsigned long encoder_old_position = 0;
 const unsigned long encoder_step_size = 4;
 
@@ -27,6 +28,7 @@ void setup() {
   digitalWrite(LED_1_PIN, LOW);
   Serial.begin(9600);
   Serial.println("Encoder Test:");
+  myEnc.write(20);
 }
 
 /* forward clarations */
@@ -36,13 +38,16 @@ unsigned int convEncToMilliSec(long input);
 
 /* main function */
 void loop() {
-  inhale_ms = convEncToMilliSec(myEnc.read());
-  const unsigned int exhale_ms = inhale_ms * 7 / 5;
+  unsigned int time_new = convEncToMilliSec(myEnc.read());
+  if ((time_new > inhale_ms) || (time_new < inhale_ms)) {
+      inhale_ms = time_new;
+  }   
+  unsigned int exhale_ms = inhale_ms;
   const unsigned int hold_ms = 500;
-  // breath(inhale_ms);
-  // delay(hold_ms * 2);
-  // breath(exhale_ms, true);
-  // delay(hold_ms);
+  breath(inhale_ms*100);
+  //delay(hold_ms * 2);
+  breath(exhale_ms*100, true);
+  //delay(hold_ms);
 }
 
 /* helper functions */
@@ -71,16 +76,19 @@ void startupAnimation() {
   }
 }
 
-unsigned int convEncToMilliSec(long encoder_new_position) {
+unsigned int convEncToMilliSec(long encoder_new_position) { //limits for the time range
+  if ((encoder_new_position / encoder_step_size) > MAX_INHALE_MS) {
+        encoder_new_position = encoder_step_size * MIN_INHALE_MS;
+      }
+      else if (encoder_new_position < encoder_step_size * MIN_INHALE_MS) {
+        encoder_new_position = encoder_step_size * MIN_INHALE_MS;
+      } 
+      //test for print encoder number
   unsigned long encoder_position_single_step = encoder_old_position / encoder_step_size;
     if ((encoder_new_position > encoder_old_position + 1) || (encoder_new_position < encoder_old_position - 1)) {
       encoder_old_position = encoder_new_position;
-      if ((encoder_new_position / encoder_step_size) > MAX_INHALE_MS) {
-        encoder_new_position = MAX_INHALE_MS * encoder_step_size;
-      }
       encoder_position_single_step = encoder_new_position / encoder_step_size;
-      Serial.print(encoder_position_single_step);
-      Serial.println();
+      Serial.println(encoder_position_single_step);
     }
   return static_cast<unsigned int>(encoder_position_single_step);
 }
